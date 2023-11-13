@@ -5,11 +5,15 @@ esp8266:
   board: esp_wroom_02
   framework:
     version: 2.7.4
+  esp8266_restore_from_flash: true
+
+preferences:
+  flash_write_interval: 1min
 
 external_components:
   - source:
       type: git
-      url: https://github.com/K-4U/custom_components
+      url: https://github.com/thedsv/yeelight_remote
     components: [ yeelight_remote ]
 
 wifi:
@@ -62,6 +66,7 @@ light:
   - platform: cwww
     id: light1
     default_transition_length: 0s
+    restore_mode: RESTORE_AND_OFF
     constant_brightness: true
     gamma_correct: 0
     name: "Yeelight Screenbar face"
@@ -76,6 +81,7 @@ light:
     name: "Yeelight Screenbar back LED Ring"
     chipset: WS2812B
     id: LED_ring
+    restore_mode: RESTORE_AND_OFF
     power_supply: power
     effects:
       - wled:
