@@ -20,7 +20,7 @@ namespace yeelight_remote {
         Trigger<> *get_press_right_trigger() const { return press_right_trigger_; }
 
     protected:
-        uint16_t parity = 0;
+        uint8_t parity = 0;
 		uint8_t previousMessageId = 0;
         uint8_t inMessageCount = 0;
 		uint8_t command = 0;
