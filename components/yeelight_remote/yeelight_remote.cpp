@@ -42,7 +42,7 @@ namespace esphome {
                     ESP_LOGD(TAG, "Parity got of: %d", readByte);
                     ESP_LOGD(TAG, "TEST Parity: %d", parity);
                     ESP_LOGD(TAG, "Calculated parity of: %d", parity % 255);
-                    if (parity % 65535 == readByte) {
+                    if (parity % 255 == readByte) {
                         ESP_LOGD(TAG, "Parity is correct. Executing! command: %d", command);
                         switch (command) {
                             case 0x01:
