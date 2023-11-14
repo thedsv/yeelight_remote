@@ -21,7 +21,6 @@ namespace esphome {
         void YeelightRemote::handle_char_(uint8_t readByte) {
             if (readByte == 0x5A && !inMessage) {
                 //New packet
-                ESP_LOGD(TAG, "TEST - New packet section. readByte: %d", readByte);
                 inMessage = true;
                 inMessageCount = 0;
                 parity = 0;
@@ -40,10 +39,9 @@ namespace esphome {
                     command = readByte;
                 } else if (inMessageCount == 7) {
                     ESP_LOGD(TAG, "Parity got of: %d", readByte);
-                    ESP_LOGD(TAG, "TEST Parity: %d", parity);
                     ESP_LOGD(TAG, "Calculated parity of: %d", parity % 255);
                     if (parity % 255 == readByte) {
-                        ESP_LOGD(TAG, "Parity is correct. Executing! command: %d", command);
+                        ESP_LOGD(TAG, "Parity is correct. Executing!");
                         switch (command) {
                             case 0x01:
                                 this->handlePress();
@@ -60,9 +58,9 @@ namespace esphome {
                             case 0x05:
                                 this->handleTwistLeft();
                                 break;
-							case 0x06:
-								this->handleLongPress();
-								break;
+                            case 0x06:
+                                this->handleLongPress();
+                                break;
                         }
                     }
                     inMessage = false;
@@ -78,7 +76,8 @@ namespace esphome {
             ESP_LOGD(TAG, "Press!");
             this->press_trigger_->trigger();
         }
-		void YeelightRemote::handleLongPress() {
+
+        void YeelightRemote::handleLongPress() {
             ESP_LOGD(TAG, "Long press!");
             this->long_press_trigger_->trigger();
         }
