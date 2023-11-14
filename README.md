@@ -8,7 +8,7 @@ Example:
 external_components:
   - source:
       type: git
-      url: https://github.com/K-4U/custom_components
+      url: https://github.com/thedsv/yeelight_remote
     components: [ yeelight_remote ]
 ```
 
