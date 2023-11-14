@@ -21,12 +21,22 @@ wifi:
   password: !secret wpa2
   fast_connect: true
 
+  ap:
+    ssid: "yeelight_esphome"
+    password: !secret ap_password
+
 captive_portal:
 
 # Enable logging
 logger:
-  baud_rate: 115200
-  level: VERY_VERBOSE
+  # For logging via serial/usb
+  # baud_rate: 115200
+  baud_rate: 0
+
+  # logs level for serial/wifi both (lower == faster device working)
+  # level: VERY_VERBOSE
+  # level: DEBUG
+  level: INFO
 
 # Enable Home Assistant API
 api:
@@ -42,7 +52,6 @@ i2c:
   scan: false
 
 # Example configuration entry
-
 wled:
 
 # Specify the two pins of the h-bridge as PWM pins
@@ -51,46 +60,49 @@ output:
     pin: GPIO12
     id: output_cw
     power_supply: power
+    # min_power: 0.05
   - platform: esp8266_pwm
     pin: GPIO5
     id: output_ww
     power_supply: power
-    
+    # min_power: 0.05
+
 power_supply:
   - id: power
     pin: GPIO4
     enable_time: 0s
     keep_on_time: 0s
+    # enable_time: 40ms
+    # keep_on_time: 20ms
 
 light:
   - platform: cwww
     id: light1
-    default_transition_length: 0s
+    default_transition_length: 1s
     restore_mode: RESTORE_AND_OFF
+    # restore_mode: RESTORE_DEFAULT_OFF
+    # restore_mode: ALWAYS_OFF
     constant_brightness: true
     gamma_correct: 0
-    name: "Yeelight Screenbar face"
+    name: "Yeelight Screenbar front light"
     cold_white: output_cw
     warm_white: output_ww
     cold_white_color_temperature: 6500 K
     warm_white_color_temperature: 2700 K
-  - platform: fastled_clockless
-    rgb_order: GRB
-    num_leds: 40
+
+  - platform: neopixelbus
+    type: GRB
+    variant: WS2811
     pin: GPIO13
-    name: "Yeelight Screenbar back LED Ring"
-    chipset: WS2812B
+    method:
+      type: bit_bang
+    num_leds: 40
+    name: "Yeelight Screenbar back light"
     id: LED_ring
-    restore_mode: RESTORE_AND_OFF
+    # gamma_correct: 1
+    default_transition_length: 0s
+    restore_mode: RESTORE_AND_ON
     power_supply: power
-    effects:
-      - wled:
-          port: 21324
-      - addressable_rainbow:
-      - random:
-      - strobe:
-      - flicker:
-      - addressable_color_wipe:
 
 uart:
   - id: remote_bus
@@ -100,15 +112,26 @@ uart:
 yeelight_remote:
   on_press:
     - light.toggle: light1
+    - delay: 0.5s
   on_left:
     then:
-      - light.dim_relative:
-          id: light1
-          relative_brightness: -3%
+      - if:
+          condition:
+            # stop if brightness < 6% (5% is off)
+            lambda: 'return id(light1).current_values.get_brightness() > 0.07;'
+          then:
+            - light.dim_relative:
+                id: light1
+                relative_brightness: -3%
+                transition_length: 0.2s
+      - delay: 0.2s
   on_right:
     then:
       - light.dim_relative:
           id: light1
           relative_brightness: 3%
+          transition_length: 0.2s
+      - delay: 0.2s
   on_long_press:
     - light.toggle: LED_ring
+    - delay: 1s
