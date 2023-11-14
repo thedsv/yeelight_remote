@@ -38,7 +38,7 @@ namespace esphome {
                 } else if (inMessageCount == 3) {
                     ESP_LOGD(TAG, "Found command: %d", readByte);
                     command = readByte;
-                } else if (inMessageCount == 5) {
+                } else if (inMessageCount == 7) {
                     ESP_LOGD(TAG, "Parity got of: %d", readByte);
                     ESP_LOGD(TAG, "TEST Parity: %d", parity);
                     ESP_LOGD(TAG, "Calculated parity of: %d", parity % 255);
